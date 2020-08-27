@@ -1,5 +1,6 @@
 package priv.xiean.DuerOS_dock_demo.robot;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -10,7 +11,9 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
+import jdk.internal.jline.internal.Log;
 import net.sf.json.JSONObject;
+import priv.xiean.DuerOS_dock_demo.util.DeviceInfoUtil;
 import priv.xiean.DuerOS_dock_demo.util.SignUtil;
 
 @Component
@@ -28,15 +31,18 @@ public class RobotServiceCall {
 	private String SPECIFIC_ROBORT_CALL_API;
 	@Value("${yunji.api.scheduled_robot}")
 	private String SCHEDULED_ROBORT_CALL_API;
-	@Value("${yunji.api.status_query}")
+	@Value("${yunji.api.robot_status_query}")
 	private String ROBOT_STATUS_QUERY_API;
+	
+	@Autowired
+	private DeviceInfoUtil deviceInfoUtil;
 
 	/**
 	 * 由指定机器人进行guide工作
 	 * 
 	 * @param params 调用API参数
 	 */
-	public void guideBySpecificRobort(MultiValueMap<String, String> params) {
+	public void guideBySpecificRobot(MultiValueMap<String, String> params) {
 		params.add("type", "guide");
 		if (params.get("productId") == null) {
 			params.add("productId", DEFAULT_ROBOT_ID);
@@ -50,12 +56,20 @@ public class RobotServiceCall {
 	 * 
 	 * @param params
 	 */
-	public void guideByScheduledRobort(MultiValueMap<String, String> params) {
+	public void guideByScheduledRobot(MultiValueMap<String, String> params) {
 		params.add("type", "guide");
 		params.add("placeId", SCHEDULED_ROBOT_PLACEID);
 		generalCall(params, SCHEDULED_ROBORT_CALL_API);
 	}
 
+	public void guideByNearestRobot(MultiValueMap<String, String> params) {
+		String apiAccessToken = params.getFirst("apiAccessionToken");
+		if(apiAccessToken!=null) {
+			System.out.println(deviceInfoUtil.getLocationInfo(apiAccessToken));
+		}else {
+			Log.info("还未取得用户授权");;
+		}
+	}
 	/**
 	 * 通用服务
 	 * 

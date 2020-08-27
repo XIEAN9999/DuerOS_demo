@@ -1,12 +1,16 @@
 package priv.xiean.DuerOS_dock_demo.web;
 
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.log;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import jdk.internal.jline.internal.Log;
 import priv.xiean.DuerOS_dock_demo.bot.GuideBot;
 import priv.xiean.DuerOS_dock_demo.robot.RobotServiceCall;
 import priv.xiean.DuerOS_dock_demo.robot.RobotStatusQuery;
@@ -42,7 +46,11 @@ public class GuideController {
 	 * @return
 	 */
 	@RequestMapping("/hello")
-	public String hello() {
+	public String hello(HttpSession session) {
+		if(session.getAttribute("apiAccessToken")!=null)
+			System.out.println(session.getAttribute("apiAccessToken"));
+		else
+			System.out.println("none");
 		return "welecome xiean";
 	}
 

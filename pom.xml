@@ -76,10 +76,10 @@
          </dependency>
          
          <!-- DuerOS -->
-         <dependency>
+<dependency>
     <groupId>com.baidu.dueros</groupId>
     <artifactId>bot-sdk</artifactId>
-    <version>1.0.6</version>
+    <version>1.2.0</version>
 </dependency>
      </dependencies>
 	
