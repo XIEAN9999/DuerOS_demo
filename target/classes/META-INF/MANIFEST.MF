@@ -1,0 +1,10 @@
+Manifest-Version: 1.0
+Built-By: 81005
+Build-Jdk: 11.0.2
+Implementation-Title: DuerOS_dock_demo
+Implementation-Version: 0.0.1-SNAPSHOT
+Implementation-Vendor-Id: xiean
+Implementation-URL: https://projects.spring.io/spring-boot/#/spring-boot
+ -starter-parent/xiean
+Created-By: Maven Integration for Eclipse
+
