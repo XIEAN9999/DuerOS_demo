@@ -67,7 +67,7 @@ public class RobotServiceCall {
 		if(apiAccessToken!=null) {
 			System.out.println(deviceInfoUtil.getLocationInfo(apiAccessToken));
 		}else {
-			Log.info("还未取得用户授权");;
+			System.out.println("还未取得用户授权");;
 		}
 	}
 	/**
