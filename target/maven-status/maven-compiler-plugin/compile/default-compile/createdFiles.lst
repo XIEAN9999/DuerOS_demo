@@ -1,0 +1,8 @@
+priv\xiean\DuerOS_dock_demo\robot\RobotServiceCall.class
+priv\xiean\DuerOS_dock_demo\DuerOS_dock_demoApplication.class
+priv\xiean\DuerOS_dock_demo\util\DeviceInfoUtil.class
+priv\xiean\DuerOS_dock_demo\robot\RobotStatusQuery.class
+priv\xiean\DuerOS_dock_demo\web\GuideController.class
+priv\xiean\DuerOS_dock_demo\bot\GuideBot.class
+priv\xiean\DuerOS_dock_demo\bot\tester.class
+priv\xiean\DuerOS_dock_demo\util\SignUtil.class

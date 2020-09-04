@@ -14,6 +14,11 @@ import org.springframework.web.client.RestTemplate;
 import net.sf.json.JSONObject;
 import priv.xiean.DuerOS_dock_demo.util.SignUtil;
 
+/**
+ * @description: ç”¨äºè°ƒç”¨äº‘è¿¹æœºå™¨äººæŸ¥è¯¢API
+ * @author: xiean99
+ * @date: 2020å¹´9æœˆ2æ—¥ ä¸‹åˆ7:37:40
+ */
 @Component
 public class RobotStatusQuery {
 
@@ -31,10 +36,10 @@ public class RobotStatusQuery {
 	private String TAKS_STATUS_QUERY_API;
 
 	/**
-	 * ²éÑ¯Ö¸¶¨»úÆ÷ÈË×´Ì¬
+	 * æŸ¥è¯¢æŒ‡å®šæœºå™¨äººå½“å‰çŠ¶æ€
 	 * 
-	 * @param productId »úÆ÷ÈËid
-	 * @return µ÷ÓÃ½á¹û
+	 * @param productId æœºå™¨äººid
+	 * @return
 	 */
 	public String robotStatusQuery(String productId) {
 		Map<String, String> params = new HashMap<String, String>();
@@ -44,10 +49,10 @@ public class RobotStatusQuery {
 	}
 
 	/**
-	 * ²éÑ¯Ö¸¶¨»úÆ÷ÈËµÄÈÎÎñ×´Ì¬
+	 * æŸ¥è¯¢æŒ‡å®šæœºå™¨äººå½“å‰æ‰§è¡Œä»»åŠ¡çŠ¶æ€
 	 * 
-	 * @param productId »úÆ÷ÈËid
-	 * @return µ÷ÓÃ½á¹û
+	 * @param productId æœºå™¨äººid
+	 * @return
 	 */
 	public String taskStatusQuery(String productId) {
 		Map<String, String> params = new HashMap<String, String>();
@@ -57,43 +62,44 @@ public class RobotStatusQuery {
 	}
 
 	/**
-	 * Í¨ÓÃ·şÎñ
+	 * é€šç”¨æœåŠ¡
 	 * 
 	 * @param params
-	 * @param url    ²»Í¬·şÎñµÄ¾ßÌåµÄAPI
+	 * @param url    æ¥å£è°ƒç”¨è¿”å›å€¼
+	 * @return
 	 */
 	private String generalCall(Map<String, String> params, String url) {
 
-		// ²ÎÊı×¼±¸
+		// å‚æ•°å‡†å¤‡
 		long ts = System.currentTimeMillis();
 		String sign = SignUtil.getSign(params, appname, secret, ts);
 		params.put("appname", appname);
 		params.put("ts", Long.toString(ts));
 		params.put("sign", sign);
 
-		// ´òÓ¡µ÷ÊÔĞÅÏ¢
+		// è¯·æ±‚å‚æ•°
 		String requestParams = "?";
 		for (String key : params.keySet()) {
 			requestParams += key + "={" + key + "}&";
 		}
-		System.out.println("¼´½«·µ»ØÊı¾İ:" + url + requestParams);
+		System.out.println("å³å°†è¿”å›çš„å‚æ•°:" + url + requestParams);
 
-		// GETÇëÇóµ÷ÓÃÏà¹ØAPI
+		// GETè¯·æ±‚è°ƒç”¨ç›¸å…³API
 		HttpHeaders header = new HttpHeaders();
 		HttpEntity<String> requestEntity = new HttpEntity<>(header);
 		RestTemplate client = new RestTemplate();
 		ResponseEntity<String> response = client.exchange(url + requestParams, HttpMethod.GET, requestEntity,
 				String.class, params);
 
-		// ÇëÇó½á¹û´¦Àí
+		// è¯·æ±‚ç»“æœå¤„ç†
 		String resultString = response.getBody();
 		JSONObject result = JSONObject.fromObject(resultString);
 		System.out.println(resultString);
 		if (result.getInt("errcode") != 0) {
-			// ³ö´í´¦Àí
-			System.out.println("---»úÆ÷ÈËµ÷ÓÃÊ§°Ü- - -");
+			// å‡ºé”™å¤„ç†
+			System.out.println("---æœºå™¨äººè°ƒç”¨å¤±è´¥---");
 		} else {
-			System.out.println("---»úÆ÷ÈËµ÷ÓÃ³É¹¦- - -");
+			System.out.println("---æœºå™¨äººè°ƒç”¨æˆåŠŸ---");
 		}
 		return resultString;
 	}

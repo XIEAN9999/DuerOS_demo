@@ -8,6 +8,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
+/**
+ * 
+ * @description: DuerOS设备位置查询工具类
+ * @author: xiean99
+ * @date: 2020年9月2日 下午7:41:39
+ */
 @Component
 public class DeviceInfoUtil {
 

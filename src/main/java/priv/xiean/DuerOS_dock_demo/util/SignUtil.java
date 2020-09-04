@@ -9,6 +9,12 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.util.DigestUtils;
 import org.springframework.util.MultiValueMap;
 
+/**
+ * 
+ * @description: DuerOS签名生成工具类
+ * @author: xiean99
+ * @date: 2020年9月2日 下午7:41:12
+ */
 public class SignUtil {
 	public static String getSign(MultiValueMap<String, String> params, String appname, String secret, long ts) {
 		List<String> kvs = new ArrayList<>();

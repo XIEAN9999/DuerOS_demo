@@ -11,11 +11,18 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
-import jdk.internal.jline.internal.Log;
 import net.sf.json.JSONObject;
+import priv.xiean.DuerOS_dock_demo.model.RobotTask;
+import priv.xiean.DuerOS_dock_demo.service.DuVoiceBoxService;
+import priv.xiean.DuerOS_dock_demo.service.RobotTaskService;
 import priv.xiean.DuerOS_dock_demo.util.DeviceInfoUtil;
 import priv.xiean.DuerOS_dock_demo.util.SignUtil;
 
+/**
+ * @description: ç”¨äºè°ƒç”¨äº‘è¿¹æœºå™¨äººæœåŠ¡API
+ * @author: xiean99
+ * @date: 2020å¹´9æœˆ2æ—¥ ä¸‹åˆ7:38:09
+ */
 @Component
 public class RobotServiceCall {
 
@@ -23,8 +30,6 @@ public class RobotServiceCall {
 	private String appname;
 	@Value("${yunji.property.secert}")
 	private String secret;
-	@Value("${yunji.property.place_id}")
-	private String SCHEDULED_ROBOT_PLACEID;
 	@Value("${yunji.property.robot_id}")
 	private String DEFAULT_ROBOT_ID;
 	@Value("${yunji.api.specific_robot}")
@@ -33,14 +38,20 @@ public class RobotServiceCall {
 	private String SCHEDULED_ROBORT_CALL_API;
 	@Value("${yunji.api.robot_status_query}")
 	private String ROBOT_STATUS_QUERY_API;
-	
+	@Value("${yunji.api.task_cancle}")
+	private String TASK_CANCLE_API;
+
 	@Autowired
 	private DeviceInfoUtil deviceInfoUtil;
+	@Autowired
+	private RobotTaskService robotTaskService;
+	@Autowired
+	private DuVoiceBoxService duVoiceBoxService;
 
 	/**
-	 * ÓÉÖ¸¶¨»úÆ÷ÈË½øĞĞguide¹¤×÷
+	 * ç”±æŒ‡å®šæœºå™¨äººè¿›è¡Œguideå·¥ä½œ
 	 * 
-	 * @param params µ÷ÓÃAPI²ÎÊı
+	 * @param params è°ƒç”¨APIå‚æ•°
 	 */
 	public void guideBySpecificRobot(MultiValueMap<String, String> params) {
 		params.add("type", "guide");
@@ -52,44 +63,66 @@ public class RobotServiceCall {
 	}
 
 	/**
-	 * ÓÉÏµÍ³µ÷¶ÈµÄ»úÆ÷ÈË½øĞĞguide¹¤×÷
+	 * ç”±ç³»ç»Ÿè°ƒåº¦çš„æœºå™¨äºº,åœ¨æŒ‡å®šçš„åœ°ç‚¹è¿›è¡Œguideå·¥ä½œ
 	 * 
-	 * @param params
+	 * @param params è°ƒç”¨APIå‚æ•°
 	 */
-	public void guideByScheduledRobot(MultiValueMap<String, String> params) {
+	public boolean guideByScheduledRobot(MultiValueMap<String, String> params) {
 		params.add("type", "guide");
-		params.add("placeId", SCHEDULED_ROBOT_PLACEID);
-		generalCall(params, SCHEDULED_ROBORT_CALL_API);
-	}
-
-	public void guideByNearestRobot(MultiValueMap<String, String> params) {
-		String apiAccessToken = params.getFirst("apiAccessionToken");
-		if(apiAccessToken!=null) {
-			System.out.println(deviceInfoUtil.getLocationInfo(apiAccessToken));
-		}else {
-			System.out.println("»¹Î´È¡µÃÓÃ»§ÊÚÈ¨");;
+		String placeId = duVoiceBoxService.getboxByDevicedId(params.getFirst("deviceId")).getPlaceId();
+		if (placeId != null) {
+			params.add("placeId", placeId);
+			generalCall(params, SCHEDULED_ROBORT_CALL_API);
+			return true;
+		} else {
+			return false;
 		}
 	}
+
 	/**
-	 * Í¨ÓÃ·şÎñ
+	 * è°ƒåº¦åœ°ç†ä½ç½®æœ€è¿‘çš„æœºå™¨äººè¿›è¡Œguideå·¥ä½œ
 	 * 
-	 * @param params
-	 * @param url    ²»Í¬·şÎñµÄ¾ßÌåµÄAPI
+	 * @param params è°ƒç”¨APIå‚æ•°
+	 */
+	public void guideByNearestRobot(MultiValueMap<String, String> params) {
+		String apiAccessToken = params.getFirst("apiAccessionToken");
+		if (apiAccessToken != null) {
+			System.out.println(deviceInfoUtil.getLocationInfo(apiAccessToken));
+		} else {
+			System.out.println("è¿˜æœªå–å¾—ç”¨æˆ·æˆæƒ");
+			;
+		}
+	}
+
+	/**
+	 * å¼ºåˆ¶å–æ¶ˆæœºå™¨äººä»»åŠ¡
+	 * 
+	 * @param params è°ƒç”¨APIå‚æ•°
+	 */
+	public void taskCancle(MultiValueMap<String, String> params) {
+		generalCall(params, TASK_CANCLE_API);
+	}
+
+	/**
+	 * é€šç”¨æœåŠ¡
+	 * 
+	 * @param params è°ƒç”¨APIå‚æ•°
+	 * @param url    ä¸åŒæœåŠ¡çš„å…·ä½“çš„API
 	 */
 	private String generalCall(MultiValueMap<String, String> params, String url) {
 
-		// ²ÎÊı×¼±¸
+		// å‚æ•°å‡†å¤‡
 		long ts = System.currentTimeMillis();
 		String sign = SignUtil.getSign(params, appname, secret, ts);
 		params.add("appname", appname);
 		params.add("ts", Long.toString(ts));
 		params.add("sign", sign);
 
-		// ´òÓ¡µ÷ÊÔĞÅÏ¢
-		System.out.println("¼´½«·µ»ØÊı¾İ:");
+		// æ‰“å°è°ƒè¯•ä¿¡æ¯
+		System.out.println("å³å°†è¿”å›æ•°æ®:");
 		params.entrySet().stream().forEach(item -> System.out.println(item.getKey() + " " + item.getValue().get(0)));
 
-		// POSTÇëÇóµ÷ÓÃÏà¹ØAPI
+		// POSTè¯·æ±‚è°ƒç”¨ç›¸å…³API
 		HttpHeaders header = new HttpHeaders();
 		header.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 		HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<MultiValueMap<String, String>>(params,
@@ -97,15 +130,20 @@ public class RobotServiceCall {
 		RestTemplate client = new RestTemplate();
 		ResponseEntity<String> response = client.exchange(url, HttpMethod.POST, requestEntity, String.class);
 
-		// ÇëÇó½á¹û´¦Àí
+		// è¯·æ±‚ç»“æœå¤„ç†
 		String resultString = response.getBody();
 		JSONObject result = JSONObject.fromObject(resultString);
+		// å°†ç»“æœæ–°å¢è‡³æ•°æ®åº“
+		RobotTask task = new RobotTask();
+		task.fieldsSetter(params, result);
+		robotTaskService.insert(task);
+
 		System.out.println(resultString);
 		if (result.getInt("errcode") != 0) {
-			// ³ö´í´¦Àí
-			System.out.println("---»úÆ÷ÈËµ÷ÓÃÊ§°Ü--");
+			// å‡ºé”™å¤„ç†
+			System.out.println("---æœºå™¨äººè°ƒç”¨å¤±è´¥---");
 		} else {
-			System.out.println("---»úÆ÷ÈËµ÷ÓÃ³É¹¦---");
+			System.out.println("---æœºå™¨äººè°ƒç”¨æˆåŠŸ---");
 		}
 		return resultString;
 	}

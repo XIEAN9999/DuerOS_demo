@@ -16,22 +16,26 @@ import com.baidu.dueros.data.request.permission.event.PermissionRejectedEvent;
 import com.baidu.dueros.data.response.OutputSpeech;
 import com.baidu.dueros.data.response.OutputSpeech.SpeechType;
 import com.baidu.dueros.data.response.card.TextCard;
-import com.baidu.dueros.data.response.directive.permission.AskForPermissionsConsent;
-import com.baidu.dueros.data.response.directive.permission.Permission;
 import com.baidu.dueros.model.Response;
 
 import priv.xiean.DuerOS_dock_demo.robot.RobotServiceCall;
 
+/**
+ * 
+ * @description: ç™¾åº¦DuerOSæŠ€èƒ½å“åº”ç±»
+ * @author: xiean99
+ * @date: 2020å¹´9æœˆ2æ—¥ ä¸‹åˆ7:39:29
+ */
 public class GuideBot extends BaseBot {
 
 	private String guideIntentName = "ClientGuide";
 	private String confirmIntentName = "ClientGuideConfirm";
 	private String cancleIntentName = "ClientGuideCancle";
-	private String needConfirmMsg = "ÊÇ·ñÒıµ¼ÖÁ·¿¼ä";
-	private String criticalInfoMissingMsg = "ÇëËµÃ÷·¿¼äºÅ";
-	private String intentConfirmedMsg = "¼´½«Òıµ¼¿Í»§µ½£º";
-	private String intentCancledMsg = "ÒÑ¾­È¡ÏûÒıµ¼ÖÁ£º";
-	private String intentUnrecognized = "ÎŞ·¨Ê¶±ğµÄÒâÍ¼";
+	private String needConfirmMsg = "æ˜¯å¦å¼•å¯¼è‡³æˆ¿é—´";
+	private String criticalInfoMissingMsg = "è¯·è¯´æ˜æˆ¿é—´å·";
+	private String intentConfirmedMsg = "å³å°†å¼•å¯¼å®¢æˆ·åˆ°ï¼š";
+	private String intentCancledMsg = "å·²ç»å–æ¶ˆå¼•å¯¼è‡³ï¼š";
+	private String intentUnrecognized = "æ— æ³•è¯†åˆ«çš„æ„å›¾";
 	private String roomSlotName = "ROOM_NUM";
 	private String roomSessionAttrName = "ROOM_NUM";
 	private String room;
@@ -43,21 +47,19 @@ public class GuideBot extends BaseBot {
 	}
 
 	/**
-	 * ´¦Àí¼¼ÄÜÆô¶¯ÊÂ¼ş
+	 * å¤„ç†æŠ€èƒ½å¯åŠ¨äº‹ä»¶
 	 */
 	@Override
 	protected Response onLaunch(LaunchRequest launchRequest) {
-		TextCard textCard = new TextCard("ÄúºÃ£¬»¶Ó­Ê¹ÓÃÒıµ¼·şÎñ");
-		OutputSpeech outputSpeech = new OutputSpeech(SpeechType.PlainText, "ÄúºÃ£¬»¶Ó­Ê¹ÓÃÒıµ¼·şÎñ");
-		System.out.println("¼¼ÄÜ´ò¿ª");
+		TextCard textCard = new TextCard("æ‚¨å¥½ï¼Œæ¬¢è¿ä½¿ç”¨å¼•å¯¼æœåŠ¡");
+		OutputSpeech outputSpeech = new OutputSpeech(SpeechType.PlainText, "æ‚¨å¥½ï¼Œæ¬¢è¿ä½¿ç”¨å¼•å¯¼æœåŠ¡");
+		System.out.println("æŠ€èƒ½æ‰“å¼€");
 		new Response(outputSpeech, textCard);
 		return response;
 	}
 
-
-
 	/**
-	 * ´¦ÀíÊ¶±ğµÄÒâÍ¼£¬ÕıÊ½°æ±¾
+	 * å¤„ç†è¯†åˆ«çš„æ„å›¾
 	 */
 	@Override
 	protected Response onInent(IntentRequest intentRequest) {
@@ -68,58 +70,59 @@ public class GuideBot extends BaseBot {
 		if (intent.equals(this.guideIntentName)) {
 			room = getSlot(this.roomSlotName);
 			if (room != null) {
-				// ÉèÖÃÈ·ÈÏ·µ»ØÏûÏ¢
+				// è®¾ç½®ç¡®è®¤è¿”å›æ¶ˆæ¯
 				textCard.setContent(this.needConfirmMsg + room);
 				outputSpeech.setText(this.needConfirmMsg + room);
-				// ±£´æÏà¹ØĞÅÏ¢µ½session
+				// ä¿å­˜ç›¸å…³ä¿¡æ¯åˆ°session
 				this.setSessionAttribute(roomSessionAttrName, room);
 
-				System.out.println("ĞèÒªÒıµ¼ÖÁ·¿¼ä:" + room + "£¬µÈ´ıÈ·ÈÏ");
+				System.out.println("éœ€è¦å¼•å¯¼è‡³æˆ¿é—´:" + room + "ï¼Œç­‰å¾…ç¡®è®¤");
 			} else {
-				// ÉèÖÃÈ±Ê§¹Ø¼ü´Ê·µ»ØĞÅÏ¢
+				// è®¾ç½®ç¼ºå¤±å…³é”®è¯è¿”å›ä¿¡æ¯
 				textCard.setContent(this.criticalInfoMissingMsg);
 				outputSpeech.setText(this.criticalInfoMissingMsg);
 
-				System.out.println("·¿¼äºÅĞÅÏ¢È±Ê§");
+				System.out.println("æˆ¿é—´å·ä¿¡æ¯ç¼ºå¤±");
 			}
 		} else if (intent.equals(this.confirmIntentName)
 				&& ((room = this.getSessionAttribute(roomSessionAttrName)) != null)) {
-			// ²ÎÊıÉèÖÃ
+			// å‚æ•°è®¾ç½®
 			MultiValueMap<String, String> params = new LinkedMultiValueMap<String, String>();
 			params.add("target", room);
 			params.add("deviceId", this.getRequest().getContext().getSystem().getDevice().getDeviceId());
-			// µ÷ÓÃrobot·şÎñ
+			// è°ƒç”¨robotæœåŠ¡
 			robotServiceCall.guideBySpecificRobot(params);
-			// ÉèÖÃ³É¹¦·µ»ØÏûÏ¢
+			// è®¾ç½®æˆåŠŸè¿”å›æ¶ˆæ¯
 			textCard.setContent(this.intentConfirmedMsg + room);
 			outputSpeech.setText(this.intentConfirmedMsg + room);
-			// Çå¿ÕsessionÖĞ·¿¼äºÅ
+			// æ¸…ç©ºsessionä¸­æˆ¿é—´å·
 			this.setSessionAttribute(roomSessionAttrName, null);
 
-			System.out.println("Òıµ¼ĞèÇóÒÑÈ·ÈÏ:" + room + "\nid:" + intentRequest.getRequestId());
+			System.out.println("å¼•å¯¼éœ€æ±‚å·²ç¡®è®¤:" + room + "\nid:" + intentRequest.getRequestId());
 
-		} else if (intent.equals(this.cancleIntentName) && ((room = this.getSessionAttribute(roomSessionAttrName)) != null)) {
-			// ÉèÖÃÈ¡ÏûĞÅÏ¢
+		} else if (intent.equals(this.cancleIntentName)
+				&& ((room = this.getSessionAttribute(roomSessionAttrName)) != null)) {
+			// è®¾ç½®å–æ¶ˆä¿¡æ¯
 			textCard.setContent(this.intentCancledMsg + room);
 			outputSpeech.setText(this.intentCancledMsg + room);
-			// Çå¿ÕsessionÖĞ·¿¼äºÅ
+			// æ¸…ç©ºsessionä¸­æˆ¿é—´å·
 			this.setSessionAttribute(roomSessionAttrName, null);
 
-			System.out.println("Òıµ¼ĞèÇóÒÑÈ¡Ïû" + intentRequest.getRequestId());
+			System.out.println("å¼•å¯¼éœ€æ±‚å·²å–æ¶ˆ" + intentRequest.getRequestId());
 
 		} else {
-			// ÉèÖÃÎŞ·¨Ê¶±ğÏûÏ¢
+			// è®¾ç½®æ— æ³•è¯†åˆ«æ¶ˆæ¯
 			textCard.setContent(this.intentUnrecognized);
 			outputSpeech.setText(this.intentUnrecognized);
 
-			System.out.println("ÎŞ·¨Ê¶±ğµÄÒâÍ¼:" + intent + " id:" + intentRequest.getRequestId());
+			System.out.println("æ— æ³•è¯†åˆ«çš„æ„å›¾:" + intent + " id:" + intentRequest.getRequestId());
 		}
 		Response response = new Response(outputSpeech, textCard);
 		return response;
 	}
 
 	/**
-	 * ´¦ÀíÓÃ»§Í¬ÒâÊÚÈ¨ÊÂ¼ş
+	 * å¤„ç†ç”¨æˆ·åŒæ„æˆæƒäº‹ä»¶
 	 */
 	@Override
 	protected Response onPermissionGrantedEvent(PermissionGrantedEvent permissionGrantedEvent) {
@@ -127,14 +130,14 @@ public class GuideBot extends BaseBot {
 	}
 
 	/**
-	 * ´¦ÀíÓÃ»§¾Ü¾øÊÚÈ¨ÊÂ¼ş
+	 * å¤„ç†ç”¨æˆ·æ‹’ç»æˆæƒäº‹ä»¶
 	 */
 	protected Response onPermissionRejectedEvent(PermissionRejectedEvent permissionRejectedEvent) {
 		return null;
 	}
 
 	/**
-	 * ´¦ÀíÊÚÈ¨Ê§°ÜÊÂ¼ş
+	 * å¤„ç†æˆæƒå¤±è´¥äº‹ä»¶
 	 */
 	protected Response onPermissionGrantFailedEvent(PermissionGrantFailedEvent permissionGrantFailedEvent) {
 		return null;

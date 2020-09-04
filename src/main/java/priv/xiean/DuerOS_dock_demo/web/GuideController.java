@@ -1,6 +1,6 @@
 package priv.xiean.DuerOS_dock_demo.web;
 
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.log;
+import java.util.Enumeration;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -10,11 +10,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import jdk.internal.jline.internal.Log;
 import priv.xiean.DuerOS_dock_demo.bot.GuideBot;
 import priv.xiean.DuerOS_dock_demo.robot.RobotServiceCall;
 import priv.xiean.DuerOS_dock_demo.robot.RobotStatusQuery;
 
+/**
+ * 
+ * @description: å¯¹DuerOSæä¾›å¼•å¯¼æŠ€èƒ½çš„è°ƒç”¨æ¥å£
+ * @author: xiean99
+ * @date: 2020å¹´9æœˆ2æ—¥ ä¸‹åˆ7:40:23
+ */
 @RestController
 @RequestMapping("/guide")
 public class GuideController {
@@ -24,15 +29,14 @@ public class GuideController {
 	private RobotStatusQuery robotStatusQuery;
 
 	/**
-	 * ¿Í»§Òıµ¼¼¼ÄÜ¶ÔDuerOSÌá¹©µÄÏìÓ¦½Ó¿Ú
+	 * å®¢æˆ·å¼•å¯¼æŠ€èƒ½å¯¹DuerOSæä¾›çš„å“åº”æ¥å£
 	 * 
 	 * @param request  HttpServletRequest
 	 * @param response HttpServletResponse
 	 * @throws Exception
 	 */
-	@RequestMapping("/response")
-	public void handler(HttpServletRequest request, HttpServletResponse response) throws Exception {
-
+	@RequestMapping("/handler")
+	public void handler(HttpServletRequest request,HttpServletResponse response) throws Exception {
 		GuideBot guideBot = new GuideBot(request, robotServiceCall);
 		guideBot.disableVerify();
 		String responseJson = guideBot.run();
@@ -41,17 +45,18 @@ public class GuideController {
 	}
 
 	/**
-	 * ÓÃÓÚ²âÊÔÄÚÍø´©Í¸ÊÇ·ñ³É¹¦
+	 * ç”¨äºæµ‹è¯•å†…ç½‘ç©¿é€æ˜¯å¦æˆåŠŸ
 	 * 
 	 * @return
 	 */
 	@RequestMapping("/hello")
 	public String hello(HttpSession session) {
-		if(session.getAttribute("apiAccessToken")!=null)
+		if (session.getAttribute("apiAccessToken") != null)
 			System.out.println(session.getAttribute("apiAccessToken"));
 		else
 			System.out.println("none");
 		return "welecome xiean";
 	}
+	
 
 }
