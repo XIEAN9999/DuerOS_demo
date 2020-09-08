@@ -12,6 +12,8 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
 import net.sf.json.JSONObject;
+import priv.xiean.DuerOS_dock_demo.enums.RobotServiceResultEnum;
+import priv.xiean.DuerOS_dock_demo.model.DuVoiceBox;
 import priv.xiean.DuerOS_dock_demo.model.RobotTask;
 import priv.xiean.DuerOS_dock_demo.service.DuVoiceBoxService;
 import priv.xiean.DuerOS_dock_demo.service.RobotTaskService;
@@ -53,13 +55,16 @@ public class RobotServiceCall {
 	 * 
 	 * @param params 调用API参数
 	 */
-	public void guideBySpecificRobot(MultiValueMap<String, String> params) {
-		params.add("type", "guide");
-		if (params.get("productId") == null) {
-			params.add("productId", DEFAULT_ROBOT_ID);
+	public RobotServiceResultEnum guideBySpecificRobot(MultiValueMap<String, String> params) {
+		DuVoiceBox box = duVoiceBoxService.getBoxByDevicedId(params.getFirst("deviceId"));
+		if (box == null) {
+			return RobotServiceResultEnum.DEVICE_NOT_MAPPED;
 		}
+		params.add("type", "guide");
+		params.add("apiType", "specific");
+		params.add("productId", box.getProductId());
 		generalCall(params, SPECIFIC_ROBORT_CALL_API);
-
+		return RobotServiceResultEnum.SUCCESS;
 	}
 
 	/**
@@ -67,32 +72,18 @@ public class RobotServiceCall {
 	 * 
 	 * @param params 调用API参数
 	 */
-	public boolean guideByScheduledRobot(MultiValueMap<String, String> params) {
+	public RobotServiceResultEnum guideByScheduledRobot(MultiValueMap<String, String> params) {
 		params.add("type", "guide");
-		String placeId = duVoiceBoxService.getboxByDevicedId(params.getFirst("deviceId")).getPlaceId();
-		if (placeId != null) {
-			params.add("placeId", placeId);
-			generalCall(params, SCHEDULED_ROBORT_CALL_API);
-			return true;
-		} else {
-			return false;
+		params.add("apiType", "schedule");
+		String placeId = robotTaskService.getPlaceIdByAddr(); // 待实现
+		if (placeId == null) {
+			return RobotServiceResultEnum.NO_SUCH_PLACE;
 		}
+		params.add("placeId", placeId);
+		generalCall(params, SCHEDULED_ROBORT_CALL_API);
+		return RobotServiceResultEnum.SUCCESS;
 	}
 
-	/**
-	 * 调度地理位置最近的机器人进行guide工作
-	 * 
-	 * @param params 调用API参数
-	 */
-	public void guideByNearestRobot(MultiValueMap<String, String> params) {
-		String apiAccessToken = params.getFirst("apiAccessionToken");
-		if (apiAccessToken != null) {
-			System.out.println(deviceInfoUtil.getLocationInfo(apiAccessToken));
-		} else {
-			System.out.println("还未取得用户授权");
-			;
-		}
-	}
 
 	/**
 	 * 强制取消机器人任务

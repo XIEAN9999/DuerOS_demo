@@ -19,8 +19,8 @@ import priv.xiean.DuerOS_dock_demo.model.RobotTask;
 @Repository
 public interface RobotTaskRepository {
 
-	@Insert("insert into robot_task(id,product_id,type,target,task_id,error_code,error_msg) "
-			+ "values(null,#{productId},#{type},#{target},#{taskId},#{errorCode},#{errorMsg})")
+	@Insert("insert into robot_task(id,product_id,task_type,target,task_id,error_code,error_msg,device_id,place_id,api_type) "
+			+ "values(null,#{productId},#{taskType},#{target},#{taskId},#{errorCode},#{errorMsg},#{deviceId},#{placeId},#{apiType})")
 	public void insert(RobotTask task);
 
 	@Update("update robot_task set task_id=#{taskId},error_code=#{errorCode},error_msg=#{errorMsg} where id=#{id}")
@@ -38,4 +38,7 @@ public interface RobotTaskRepository {
 
 	@Select("select * from robot_task where task_id=#{taskId}")
 	public List<RobotTask> getTaskById(@Param("taskId") String taskId);
+	
+	@Select("")
+	public String getPlaceIdByAddr();
 }

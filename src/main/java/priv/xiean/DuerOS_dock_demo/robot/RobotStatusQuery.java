@@ -26,8 +26,6 @@ public class RobotStatusQuery {
 	private String appname;
 	@Value("${yunji.property.secert}")
 	private String secret;
-	@Value("${yunji.property.place_id}")
-	private String SCHEDULED_ROBOT_PLACEID;
 	@Value("${yunji.property.robot_id}")
 	private String DEFAULT_ROBOT_ID;
 	@Value("${yunji.api.robot_status_query}")

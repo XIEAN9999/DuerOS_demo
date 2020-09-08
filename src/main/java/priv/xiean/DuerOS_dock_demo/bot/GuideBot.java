@@ -18,6 +18,7 @@ import com.baidu.dueros.data.response.OutputSpeech.SpeechType;
 import com.baidu.dueros.data.response.card.TextCard;
 import com.baidu.dueros.model.Response;
 
+import priv.xiean.DuerOS_dock_demo.enums.RobotServiceResultEnum;
 import priv.xiean.DuerOS_dock_demo.robot.RobotServiceCall;
 
 /**
@@ -90,11 +91,20 @@ public class GuideBot extends BaseBot {
 			MultiValueMap<String, String> params = new LinkedMultiValueMap<String, String>();
 			params.add("target", room);
 			params.add("deviceId", this.getRequest().getContext().getSystem().getDevice().getDeviceId());
+			System.out.println(this.getRequest().getContext().getSystem().getDevice().getDeviceId());
 			// 调用robot服务
-			robotServiceCall.guideBySpecificRobot(params);
-			// 设置成功返回消息
+			RobotServiceResultEnum result = robotServiceCall.guideBySpecificRobot(params);
+			
+			// 返回结果处理
+			if(result.equals(RobotServiceResultEnum.SUCCESS)) {
+				// 设置成功返回消息
 			textCard.setContent(this.intentConfirmedMsg + room);
 			outputSpeech.setText(this.intentConfirmedMsg + room);
+			}else {
+				textCard.setContent(result.getMsg());
+				outputSpeech.setText(result.getMsg());
+			}
+			
 			// 清空session中房间号
 			this.setSessionAttribute(roomSessionAttrName, null);
 

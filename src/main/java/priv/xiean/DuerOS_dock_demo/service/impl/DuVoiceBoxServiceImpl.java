@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import priv.xiean.DuerOS_dock_demo.dao.DuVoiceBoxRepository;
 import priv.xiean.DuerOS_dock_demo.model.DuVoiceBox;
 import priv.xiean.DuerOS_dock_demo.service.DuVoiceBoxService;
 
@@ -18,30 +19,30 @@ import priv.xiean.DuerOS_dock_demo.service.DuVoiceBoxService;
 public class DuVoiceBoxServiceImpl implements DuVoiceBoxService {
 
 	@Autowired
-	private DuVoiceBoxService duVoiceBoxService;
+	private DuVoiceBoxRepository duVoiceBoxRepository;
 
 	@Override
 	public void insert(DuVoiceBox box) {
-		duVoiceBoxService.insert(box);
+		duVoiceBoxRepository.insert(box);
+	}
+ 
+	@Override
+	public void updateProductId(String deviceId, String productId) {
+		duVoiceBoxRepository.updateProductId(deviceId, productId);
 	}
 
 	@Override
-	public void updatePlaceId(String deviceId, String placeId) {
-		duVoiceBoxService.updatePlaceId(deviceId, placeId);
+	public DuVoiceBox getBoxByDevicedId(String deviceId) {
+		return duVoiceBoxRepository.getBoxByDevicedId(deviceId);
 	}
 
 	@Override
-	public DuVoiceBox getboxByDevicedId(String deviceId) {
-		return duVoiceBoxService.getboxByDevicedId(deviceId);
-	}
-
-	@Override
-	public List<DuVoiceBox> getboxByPlaceId(String placeId) {
-		return duVoiceBoxService.getboxByPlaceId(placeId);
+	public List<DuVoiceBox> getBoxByProductId(String productId) {
+		return duVoiceBoxRepository.getBoxByProductId(productId);
 	}
 
 	@Override
 	public void deleteBoxByDevicedId(String deviceId) {
-		duVoiceBoxService.deleteBoxByDevicedId(deviceId);
+		duVoiceBoxRepository.deleteBoxByDevicedId(deviceId);
 	}
 }

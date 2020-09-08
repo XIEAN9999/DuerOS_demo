@@ -2,7 +2,6 @@ package priv.xiean.DuerOS_dock_demo.model;
 
 import java.util.Date;
 
-
 import net.sf.json.JSONObject;
 import org.springframework.util.MultiValueMap;
 
@@ -18,20 +17,21 @@ public class RobotTask {
 	private String placeId;
 	private String deviceId;
 	private String productId;
-	private String type;
+	private String taskType;
 	private String target;
 	private String taskId;
 	private int errorCode;
 	private String errorMsg;
 	private Date createTime;
+	private String apiType;
 
 	public void fieldsSetter(MultiValueMap<String, String> params, JSONObject json) {
 		deviceId = params.getFirst("deviceId");
 		placeId = params.getFirst("placeId");
 		productId = params.getFirst("productId");
 		target = params.getFirst("target");
-		type = params.getFirst("type");
-
+		taskType = params.getFirst("type");
+		apiType = params.getFirst("apiType");
 		this.errorCode = json.getInt("errcode");
 		if (errorCode == 0) {
 			taskId = json.getJSONObject("data").getString("taskId");
@@ -39,6 +39,14 @@ public class RobotTask {
 			errorMsg = json.getString("errmsg");
 		}
 
+	}
+
+	public String getApiType() {
+		return apiType;
+	}
+
+	public void setApiType(String apiType) {
+		this.apiType = apiType;
 	}
 
 	public String getPlaceId() {
@@ -73,12 +81,12 @@ public class RobotTask {
 		this.productId = productId;
 	}
 
-	public String getType() {
-		return type;
+	public String getTaskType() {
+		return taskType;
 	}
 
-	public void setType(String type) {
-		this.type = type;
+	public void setTaskType(String taskType) {
+		this.taskType = taskType;
 	}
 
 	public String getTarget() {

@@ -13,11 +13,11 @@ import priv.xiean.DuerOS_dock_demo.model.DuVoiceBox;
 public interface DuVoiceBoxService {
 	public void insert(DuVoiceBox box);
 
-	public void updatePlaceId(String deviceId, String placeId);
+	public void updateProductId(String deviceId, String productId);
 
-	public DuVoiceBox getboxByDevicedId(String deviceId);
+	public DuVoiceBox getBoxByDevicedId(String deviceId);
 
-	public List<DuVoiceBox> getboxByPlaceId(String placeId);
+	public List<DuVoiceBox> getBoxByProductId(String productId);
 
 	public void deleteBoxByDevicedId(String deviceId);
 }

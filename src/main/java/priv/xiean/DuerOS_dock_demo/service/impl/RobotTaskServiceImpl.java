@@ -45,4 +45,9 @@ public class RobotTaskServiceImpl implements RobotTaskService{
 	public List<RobotTask> getTasksAll() {
 		return robotTaskRepostory.getTasksAll();
 	}
+
+	@Override
+	public String getPlaceIdByAddr() {
+		return null;
+	}
 }

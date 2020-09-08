@@ -20,17 +20,17 @@ import priv.xiean.DuerOS_dock_demo.model.DuVoiceBox;
 @Repository
 public interface DuVoiceBoxRepository {
 
-	@Insert("insert into du_voice_box(id,place_id,device_id) values(null,#{placeId},#{deviceId})")
+	@Insert("insert into du_voice_box(id,product_id,device_id) values(null,#{productId},#{deviceId})")
 	public void insert(DuVoiceBox box);
 
-	@Update("update du_voice_box set place_id=#{placeId} where device_id=#{deviceId}")
-	public void updatePlaceId(@Param("deviceId") String deviceId, @Param("placeId") String placeId);
+	@Update("update du_voice_box set product_id=#{productId} where device_id=#{deviceId}")
+	public void updateProductId(@Param("deviceId") String deviceId, @Param("productId") String productId);
 
 	@Select("select * from du_voice_box where device_id=#{deviceId}")
-	public DuVoiceBox getboxByDevicedId(@Param("deviceId") String deviceId);
+	public DuVoiceBox getBoxByDevicedId(@Param("deviceId") String deviceId);
 
-	@Select("select * from du_voice_box where place_id=#{placeId}")
-	public List<DuVoiceBox> getboxByPlaceId(@Param("placeId") String placeId);
+	@Select("select * from du_voice_box where product_id=#{productId}")
+	public List<DuVoiceBox> getBoxByProductId(@Param("productId") String productId);
 
 	@Delete("delete from du_voice_box where device_id=#{deviceId}")
 	public void deleteBoxByDevicedId(@Param("deviceId") String deviceId);

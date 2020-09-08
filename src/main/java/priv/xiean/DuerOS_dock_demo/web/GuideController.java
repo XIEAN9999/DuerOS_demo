@@ -1,7 +1,5 @@
 package priv.xiean.DuerOS_dock_demo.web;
 
-import java.util.Enumeration;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;

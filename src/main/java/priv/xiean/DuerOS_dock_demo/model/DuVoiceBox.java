@@ -10,18 +10,18 @@ package priv.xiean.DuerOS_dock_demo.model;
 public class DuVoiceBox {
 	
 	private String deviceId;
-	private String placeId;
+	private String productId;
 	public String getDeviceId() {
 		return deviceId;
 	}
 	public void setDeviceId(String deviceId) {
 		this.deviceId = deviceId;
 	}
-	public String getPlaceId() {
-		return placeId;
+	public String getProductId() {
+		return productId;
 	}
-	public void setPlaceId(String placeId) {
-		this.placeId = placeId;
+	public void setProductId(String productId) {
+		this.productId = productId;
 	}
 
 
