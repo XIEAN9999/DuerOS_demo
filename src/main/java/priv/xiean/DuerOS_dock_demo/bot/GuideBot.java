@@ -8,8 +8,10 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
 import com.baidu.dueros.bot.BaseBot;
+import com.baidu.dueros.certificate.Certificate;
 import com.baidu.dueros.data.request.IntentRequest;
 import com.baidu.dueros.data.request.LaunchRequest;
+import com.baidu.dueros.data.request.SessionEndedRequest;
 import com.baidu.dueros.data.request.permission.event.PermissionGrantFailedEvent;
 import com.baidu.dueros.data.request.permission.event.PermissionGrantedEvent;
 import com.baidu.dueros.data.request.permission.event.PermissionRejectedEvent;
@@ -17,6 +19,7 @@ import com.baidu.dueros.data.response.OutputSpeech;
 import com.baidu.dueros.data.response.OutputSpeech.SpeechType;
 import com.baidu.dueros.data.response.card.TextCard;
 import com.baidu.dueros.model.Response;
+import com.fasterxml.jackson.databind.JsonMappingException;
 
 import priv.xiean.DuerOS_dock_demo.enums.RobotServiceResultEnum;
 import priv.xiean.DuerOS_dock_demo.robot.RobotServiceCall;
@@ -32,18 +35,19 @@ public class GuideBot extends BaseBot {
 	private String guideIntentName = "ClientGuide";
 	private String confirmIntentName = "ClientGuideConfirm";
 	private String cancleIntentName = "ClientGuideCancle";
-	private String needConfirmMsg = "是否引导至房间";
+	private String needConfirmMsg = "是否引导客人到%s房间";
 	private String criticalInfoMissingMsg = "请说明房间号";
-	private String intentConfirmedMsg = "即将引导客户到：";
-	private String intentCancledMsg = "已经取消引导至：";
-	private String intentUnrecognized = "无法识别的意图";
+	private String intentConfirmedMsg = "即将引导客户到%s";
+	private String intentCancledMsg = "已经取消引导至%s房间";
 	private String roomSlotName = "ROOM_NUM";
 	private String roomSessionAttrName = "ROOM_NUM";
 	private String room;
 	private RobotServiceCall robotServiceCall;
 
-	public GuideBot(HttpServletRequest request, RobotServiceCall robotServiceCall) throws IOException {
-		super(request);
+	public GuideBot(Certificate certificate, RobotServiceCall robotServiceCall)
+			throws JsonMappingException, IOException {
+		super(certificate);
+		super.setCertificate(certificate);
 		this.robotServiceCall = robotServiceCall;
 	}
 
@@ -54,7 +58,6 @@ public class GuideBot extends BaseBot {
 	protected Response onLaunch(LaunchRequest launchRequest) {
 		TextCard textCard = new TextCard("您好，欢迎使用引导服务");
 		OutputSpeech outputSpeech = new OutputSpeech(SpeechType.PlainText, "您好，欢迎使用引导服务");
-		System.out.println("技能打开");
 		new Response(outputSpeech, textCard);
 		return response;
 	}
@@ -72,8 +75,8 @@ public class GuideBot extends BaseBot {
 			room = getSlot(this.roomSlotName);
 			if (room != null) {
 				// 设置确认返回消息
-				textCard.setContent(this.needConfirmMsg + room);
-				outputSpeech.setText(this.needConfirmMsg + room);
+				textCard.setContent(String.format(needConfirmMsg, room));
+				outputSpeech.setText(String.format(needConfirmMsg, room));
 				// 保存相关信息到session
 				this.setSessionAttribute(roomSessionAttrName, room);
 
@@ -89,46 +92,65 @@ public class GuideBot extends BaseBot {
 				&& ((room = this.getSessionAttribute(roomSessionAttrName)) != null)) {
 			// 参数设置
 			MultiValueMap<String, String> params = new LinkedMultiValueMap<String, String>();
+			String devicedId = this.getRequest().getContext().getSystem().getDevice().getDeviceId();
 			params.add("target", room);
-			params.add("deviceId", this.getRequest().getContext().getSystem().getDevice().getDeviceId());
-			System.out.println(this.getRequest().getContext().getSystem().getDevice().getDeviceId());
+			params.add("deviceId", devicedId);
+			System.out.println("got device ID:" + this.getDeviceId()+"\n"+devicedId+"\n"+this.getOriginalDeviceId());
 			// 调用robot服务
 			RobotServiceResultEnum result = robotServiceCall.guideBySpecificRobot(params);
-			
 			// 返回结果处理
-			if(result.equals(RobotServiceResultEnum.SUCCESS)) {
-				// 设置成功返回消息
-			textCard.setContent(this.intentConfirmedMsg + room);
-			outputSpeech.setText(this.intentConfirmedMsg + room);
-			}else {
+			if (result.equals(RobotServiceResultEnum.SUCCESS)) {
+				// 设置调用成功返回消息
+				textCard.setContent(String.format(intentConfirmedMsg, room));
+				outputSpeech.setText(String.format(intentConfirmedMsg, room));
+			} else {
+				// 设置调用失败返回消息
 				textCard.setContent(result.getMsg());
 				outputSpeech.setText(result.getMsg());
 			}
-			
 			// 清空session中房间号
 			this.setSessionAttribute(roomSessionAttrName, null);
+			// 会话结束
+			this.endDialog();
 
 			System.out.println("引导需求已确认:" + room + "\nid:" + intentRequest.getRequestId());
 
 		} else if (intent.equals(this.cancleIntentName)
 				&& ((room = this.getSessionAttribute(roomSessionAttrName)) != null)) {
 			// 设置取消信息
-			textCard.setContent(this.intentCancledMsg + room);
-			outputSpeech.setText(this.intentCancledMsg + room);
+			textCard.setContent(String.format(intentCancledMsg, room));
+			outputSpeech.setText(String.format(intentCancledMsg, room));
 			// 清空session中房间号
 			this.setSessionAttribute(roomSessionAttrName, null);
+			// 会话结束
+			this.endDialog();
 
 			System.out.println("引导需求已取消" + intentRequest.getRequestId());
 
 		} else {
 			// 设置无法识别消息
-			textCard.setContent(this.intentUnrecognized);
-			outputSpeech.setText(this.intentUnrecognized);
+			// textCard.setContent(this.intentUnrecognized);
+			// outputSpeech.setText(this.intentUnrecognized);
 
-			System.out.println("无法识别的意图:" + intent + " id:" + intentRequest.getRequestId());
+			System.out.println("无法识别的意图:" + intentRequest.getQuery().getOriginal());
 		}
+
 		Response response = new Response(outputSpeech, textCard);
 		return response;
+	}
+
+	/**
+	 * 处理会话关闭事件
+	 */
+	@Override
+	protected Response onSessionEnded(SessionEndedRequest sessionEndRequest) {
+		TextCard textCard = new TextCard("感谢使用引领服务");
+		textCard.setAnchorText("setAnchorText");
+		textCard.addCueWord("欢迎再次使用");
+		OutputSpeech outputSpeech = new OutputSpeech(SpeechType.PlainText, "欢迎再次使用引领服务");
+		Response response = new Response(outputSpeech, textCard);
+		return response;
+
 	}
 
 	/**

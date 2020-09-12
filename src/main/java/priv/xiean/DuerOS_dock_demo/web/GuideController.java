@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.baidu.dueros.certificate.Certificate;
+
 import priv.xiean.DuerOS_dock_demo.bot.GuideBot;
 import priv.xiean.DuerOS_dock_demo.robot.RobotServiceCall;
 import priv.xiean.DuerOS_dock_demo.robot.RobotStatusQuery;
@@ -34,12 +36,15 @@ public class GuideController {
 	 * @throws Exception
 	 */
 	@RequestMapping("/handler")
-	public void handler(HttpServletRequest request,HttpServletResponse response) throws Exception {
-		GuideBot guideBot = new GuideBot(request, robotServiceCall);
-		guideBot.disableVerify();
-		String responseJson = guideBot.run();
-		response.setCharacterEncoding("UTF-8");
-		response.getWriter().append(responseJson);
+	public void handler(HttpServletRequest request, HttpServletResponse response) throws Exception {
+		Certificate certificate = new Certificate(request);
+		if (!certificate.getMessage().equals("")) {
+			GuideBot guideBot = new GuideBot(certificate, robotServiceCall);
+			guideBot.enableVerify();
+			String responseJson = guideBot.run();
+			response.setCharacterEncoding("UTF-8");
+			response.getWriter().append(responseJson);
+		}
 	}
 
 	/**
@@ -55,6 +60,5 @@ public class GuideController {
 			System.out.println("none");
 		return "welecome xiean";
 	}
-	
 
 }
