@@ -35,10 +35,13 @@ public class GuideBot extends BaseBot {
 	private String guideIntentName = "ClientGuide";
 	private String confirmIntentName = "ClientGuideConfirm";
 	private String cancleIntentName = "ClientGuideCancle";
+	private String welecomeMsg = "欢迎使用客人引领服务";
 	private String needConfirmMsg = "是否引导客人到%s房间";
 	private String criticalInfoMissingMsg = "请说明房间号";
 	private String intentConfirmedMsg = "即将引导客户到%s";
 	private String intentCancledMsg = "已经取消引导至%s房间";
+	private String intentUnrecognized="未能识别您的意图，请再说一遍";
+	private String serviceEndedMsg = "欢迎再次使用引领服务";
 	private String roomSlotName = "ROOM_NUM";
 	private String roomSessionAttrName = "ROOM_NUM";
 	private String room;
@@ -56,9 +59,10 @@ public class GuideBot extends BaseBot {
 	 */
 	@Override
 	protected Response onLaunch(LaunchRequest launchRequest) {
-		TextCard textCard = new TextCard("您好，欢迎使用引导服务");
-		OutputSpeech outputSpeech = new OutputSpeech(SpeechType.PlainText, "您好，欢迎使用引导服务");
-		new Response(outputSpeech, textCard);
+		TextCard textCard = new TextCard(welecomeMsg);
+		OutputSpeech outputSpeech = new OutputSpeech(SpeechType.PlainText, welecomeMsg);
+		Response response = new Response(outputSpeech, textCard);
+		System.out.println("技能启动");
 		return response;
 	}
 
@@ -82,6 +86,8 @@ public class GuideBot extends BaseBot {
 
 				System.out.println("需要引导至房间:" + room + "，等待确认");
 			} else {
+				// 设置需要确认的槽位
+				this.setConfirmSlot(this.roomSlotName);
 				// 设置缺失关键词返回信息
 				textCard.setContent(this.criticalInfoMissingMsg);
 				outputSpeech.setText(this.criticalInfoMissingMsg);
@@ -92,27 +98,20 @@ public class GuideBot extends BaseBot {
 				&& ((room = this.getSessionAttribute(roomSessionAttrName)) != null)) {
 			// 参数设置
 			MultiValueMap<String, String> params = new LinkedMultiValueMap<String, String>();
-			String devicedId = this.getRequest().getContext().getSystem().getDevice().getDeviceId();
+			String devicedId = this.getDeviceId();
 			params.add("target", room);
 			params.add("deviceId", devicedId);
-			System.out.println("got device ID:" + this.getDeviceId()+"\n"+devicedId+"\n"+this.getOriginalDeviceId());
+			System.out.println("got device ID:" + this.getDeviceId());
 			// 调用robot服务
 			RobotServiceResultEnum result = robotServiceCall.guideBySpecificRobot(params);
 			// 返回结果处理
-			if (result.equals(RobotServiceResultEnum.SUCCESS)) {
-				// 设置调用成功返回消息
-				textCard.setContent(String.format(intentConfirmedMsg, room));
-				outputSpeech.setText(String.format(intentConfirmedMsg, room));
-			} else {
-				// 设置调用失败返回消息
-				textCard.setContent(result.getMsg());
-				outputSpeech.setText(result.getMsg());
-			}
+			textCard.setContent(result.getMsg());
+			outputSpeech.setText(result.getMsg());
 			// 清空session中房间号
 			this.setSessionAttribute(roomSessionAttrName, null);
-			// 会话结束
+			// 结束会话
 			this.endDialog();
-
+			
 			System.out.println("引导需求已确认:" + room + "\nid:" + intentRequest.getRequestId());
 
 		} else if (intent.equals(this.cancleIntentName)
@@ -122,15 +121,15 @@ public class GuideBot extends BaseBot {
 			outputSpeech.setText(String.format(intentCancledMsg, room));
 			// 清空session中房间号
 			this.setSessionAttribute(roomSessionAttrName, null);
-			// 会话结束
+			// 结束会话
 			this.endDialog();
-
+			
 			System.out.println("引导需求已取消" + intentRequest.getRequestId());
 
 		} else {
 			// 设置无法识别消息
-			// textCard.setContent(this.intentUnrecognized);
-			// outputSpeech.setText(this.intentUnrecognized);
+			textCard.setContent(intentUnrecognized);
+			outputSpeech.setText(intentUnrecognized);
 
 			System.out.println("无法识别的意图:" + intentRequest.getQuery().getOriginal());
 		}
@@ -144,10 +143,8 @@ public class GuideBot extends BaseBot {
 	 */
 	@Override
 	protected Response onSessionEnded(SessionEndedRequest sessionEndRequest) {
-		TextCard textCard = new TextCard("感谢使用引领服务");
-		textCard.setAnchorText("setAnchorText");
-		textCard.addCueWord("欢迎再次使用");
-		OutputSpeech outputSpeech = new OutputSpeech(SpeechType.PlainText, "欢迎再次使用引领服务");
+		TextCard textCard = new TextCard(serviceEndedMsg);
+		OutputSpeech outputSpeech = new OutputSpeech(SpeechType.PlainText,serviceEndedMsg);
 		Response response = new Response(outputSpeech, textCard);
 		return response;
 

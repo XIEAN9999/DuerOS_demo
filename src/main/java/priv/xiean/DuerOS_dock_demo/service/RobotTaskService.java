@@ -21,6 +21,6 @@ public interface RobotTaskService {
 
 	public List<RobotTask> getTasksAll();
 
-	public String getPlaceIdByAddr();
+	public String getPlaceIdByAddr(String placeId);
 
 }

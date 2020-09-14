@@ -75,7 +75,7 @@ public class RobotServiceCall {
 	public RobotServiceResultEnum guideByScheduledRobot(MultiValueMap<String, String> params) {
 		params.add("type", "guide");
 		params.add("apiType", "schedule");
-		String placeId = robotTaskService.getPlaceIdByAddr(); // 待实现
+		String placeId = robotTaskService.getPlaceIdByAddr(params.getFirst("addr"));
 		if (placeId == null) {
 			return RobotServiceResultEnum.NO_SUCH_PLACE;
 		}
@@ -83,7 +83,6 @@ public class RobotServiceCall {
 		generalCall(params, SCHEDULED_ROBORT_CALL_API);
 		return RobotServiceResultEnum.SUCCESS;
 	}
-
 
 	/**
 	 * 强制取消机器人任务
