@@ -37,7 +37,7 @@ public class GuideBot extends BaseBot {
 	private String cancleIntentName = "ClientGuideCancle";
 	private String welecomeMsg = "欢迎使用客人引领服务";
 	private String criticalInfoMissingMsg = "请说明房间号";
-	private String intentCancledMsg = "已经取消引导至%s房间";
+	private String intentCancledMsg = "任务已取消";
 	private String intentUnrecognized = "未能识别您的意图，请再说一遍";
 	private String serviceEndedMsg = "欢迎再次使用引领服务";
 	private String roomSlotName = "ROOM_NUM";
@@ -110,7 +110,7 @@ public class GuideBot extends BaseBot {
 
 				System.out.println("房间号信息缺失");
 			}
-		} else if (intent.equals(this.cancleIntentName)
+		} else if (intentRequest.getQuery().getOriginal().contains("取消")
 				&& ((room = this.getSessionAttribute(roomSessionName)) != null)) {
 			//设置参数
 			MultiValueMap<String, String> params = new LinkedMultiValueMap<String, String>();
@@ -127,8 +127,8 @@ public class GuideBot extends BaseBot {
 			thread.start();
 			//RobotServiceResultEnum result = robotServiceCall.taskCancle(params);
 			// 返回语音文字结果
-			textCard.setContent(String.format(intentCancledMsg, room));
-			outputSpeech.setText(String.format(intentCancledMsg, room));
+			textCard.setContent(intentCancledMsg);
+			outputSpeech.setText(intentCancledMsg);
 			// 结束会话
 			this.clearSessionAttribute();
 
