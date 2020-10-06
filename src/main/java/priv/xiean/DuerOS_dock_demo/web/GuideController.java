@@ -28,7 +28,7 @@ public class GuideController {
 	@Autowired
 	private RobotStatusQuery robotStatusQuery;
 
-	/**
+	/** 
 	 * 客户引导技能对DuerOS提供的响应接口
 	 * 
 	 * @param request  HttpServletRequest
@@ -36,7 +36,8 @@ public class GuideController {
 	 * @throws Exception
 	 */
 	@RequestMapping("/handler")
-	public void handler(HttpServletRequest request, HttpServletResponse response) throws Exception {
+	public void handler(HttpServletRequest request, HttpServletResponse response)
+			throws Exception {
 		Certificate certificate = new Certificate(request);
 		if (!certificate.getMessage().equals("")) {
 			GuideBot guideBot = new GuideBot(certificate, robotServiceCall);

@@ -64,7 +64,9 @@ public class RobotServiceCall {
 		params.add("apiType", "specific");
 		params.add("productId", box.getProductId());
 		generalCall(params, SPECIFIC_ROBORT_CALL_API);
-		return RobotServiceResultEnum.SUCCESS;
+		RobotServiceResultEnum res = RobotServiceResultEnum.SUCCESS;
+		res.setProductId(box.getProductId());
+		return res;
 	}
 
 	/**
@@ -89,8 +91,11 @@ public class RobotServiceCall {
 	 * 
 	 * @param params 调用API参数
 	 */
-	public void taskCancle(MultiValueMap<String, String> params) {
-		generalCall(params, TASK_CANCLE_API);
+	public RobotServiceResultEnum taskCancle(MultiValueMap<String, String> params) {
+		params.add("type", "cancle");
+		return generalCall(params, TASK_CANCLE_API).equals(RobotServiceResultEnum.SUCCESS)
+				? RobotServiceResultEnum.CANCLE_SUCCESSFULLY
+				: RobotServiceResultEnum.CANCLE_FAILED;
 	}
 
 	/**
@@ -99,7 +104,7 @@ public class RobotServiceCall {
 	 * @param params 调用API参数
 	 * @param url    不同服务的具体的API
 	 */
-	private String generalCall(MultiValueMap<String, String> params, String url) {
+	private RobotServiceResultEnum generalCall(MultiValueMap<String, String> params, String url) {
 
 		// 参数准备
 		long ts = System.currentTimeMillis();
@@ -132,10 +137,11 @@ public class RobotServiceCall {
 		if (result.getInt("errcode") != 0) {
 			// 出错处理
 			System.out.println("---机器人调用失败---");
+			return RobotServiceResultEnum.UNDEFINE;
 		} else {
 			System.out.println("---机器人调用成功---");
+			return RobotServiceResultEnum.SUCCESS;
 		}
-		return resultString;
 	}
 
 }

@@ -1,3 +1,5 @@
+priv\xiean\DuerOS_dock_demo\bot\GuideBot$1.class
+priv\xiean\DuerOS_dock_demo\enums\TaskTypeEnum.class
 priv\xiean\DuerOS_dock_demo\service\DuVoiceBoxService.class
 priv\xiean\DuerOS_dock_demo\service\RobotTaskService.class
 priv\xiean\DuerOS_dock_demo\enums\RobotServiceResultEnum.class

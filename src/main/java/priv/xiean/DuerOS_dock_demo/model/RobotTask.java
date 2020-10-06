@@ -3,6 +3,8 @@ package priv.xiean.DuerOS_dock_demo.model;
 import java.util.Date;
 
 import net.sf.json.JSONObject;
+import priv.xiean.DuerOS_dock_demo.enums.TaskTypeEnum;
+
 import org.springframework.util.MultiValueMap;
 
 /**
@@ -34,7 +36,9 @@ public class RobotTask {
 		apiType = params.getFirst("apiType");
 		this.errorCode = json.getInt("errcode");
 		if (errorCode == 0) {
-			taskId = json.getJSONObject("data").getString("taskId");
+			if(taskType.equals(TaskTypeEnum.GUIDE.getName())) {
+				taskId = json.getJSONObject("data").getString("taskId");
+			}
 		} else {
 			errorMsg = json.getString("errmsg");
 		}
